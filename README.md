@@ -16,3 +16,6 @@ Probably not going to update this very often unless I feel I need to fix somethi
 ## VirusTotal
 I already went ahead and ran it through VirusTotal myself. The sandboxes think it behaves like a crypto miner, neat.
 https://www.virustotal.com/gui/file/38c4495b948241b265ca9a1306b18e4f8688332f80749e7f0d09a8fb0e348d01/behavior
+
+## Other Fun Facts
+There's a handful of code that doesn't do anything. Like finding out if the download is a WEBM so it can be remuxed. I didn't feel like fixing it so I just made it so if you download the best quality it'll just try to remux. If it's already MP4 it won't.
