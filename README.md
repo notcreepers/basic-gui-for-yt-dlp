@@ -18,5 +18,6 @@ I already went ahead and ran it through VirusTotal myself. The sandboxes think i
 https://www.virustotal.com/gui/file/38c4495b948241b265ca9a1306b18e4f8688332f80749e7f0d09a8fb0e348d01/behavior
 
 ## Other Fun Facts
-There's a handful of code that doesn't do anything. Like finding out if the download is a WEBM so it can be remuxed. I didn't feel like fixing it so I just made it so if you download the best quality it'll just try to remux. If it's already MP4 it won't.
-There's no point in putting my name like properly in the code or anything since this is open source and if someone really wanted to steal it they can just edit my name out of the code. So tbh I'll just ask that you don't.
+Fun fact 1. There's a handful of code that doesn't do anything. Like finding out if the download is a WEBM so it can be remuxed. I didn't feel like fixing it so I just made it so if you download the best quality it'll just try to remux. If it's already MP4 it won't.
+
+Fun fact 2. There's no point in putting my name like properly in the code or anything since this is open source and if someone really wanted to steal it they can just edit my name out of the code. So tbh I'll just ask that you don't.
