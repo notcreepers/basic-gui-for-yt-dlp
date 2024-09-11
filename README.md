@@ -2,6 +2,7 @@
 Fairly barebones GUI for yt-dlp
 
 ![yt-dlp-gui-icon](https://github.com/user-attachments/assets/c9cdc7ee-89d8-4fa0-9785-5ba4acbc5453)
+
 (I made this icon in 2 minutes, can you tell?)
 
 ## Backstory
