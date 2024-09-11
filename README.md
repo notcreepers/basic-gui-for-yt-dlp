@@ -1,6 +1,9 @@
 # basic-gui-for-yt-dlp
 Fairly barebones GUI for yt-dlp
 
+![yt-dlp-gui-icon](https://github.com/user-attachments/assets/c9cdc7ee-89d8-4fa0-9785-5ba4acbc5453)
+(I made this icon in 2 minutes, can you tell?)
+
 ## Backstory
 Got pretty bored one night and decided "Fuck it, let's make a GUI for yt-dlp in python." Not expecting much to come from this. My first main python project and potentially my last.
 
