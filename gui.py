@@ -192,7 +192,7 @@ def open_about_window():
     about_window = tk.Toplevel(root)
     about_window.title("About")
     about_window.iconbitmap(icon_path)
-    about_window.geometry("400x250")
+    about_window.geometry("540x340")
     pywinstyles.apply_style(about_window, "dark" if sv_ttk.get_theme() == "dark" else "normal")
 
     logo_image = tk.PhotoImage(file=get_resource_path('resources/yt-dlp-gui-icon.png'))
@@ -201,8 +201,9 @@ def open_about_window():
     logo_label.pack(pady=10)
 
     ttk.Label(about_window, text="yt-dlp GUI").pack(pady=10)
-    ttk.Label(about_window, text="v1.0.2").pack(pady=5)
+    ttk.Label(about_window, text="v1.0.3").pack(pady=5)
     ttk.Label(about_window, text="Made by Creepers").pack(pady=5)
+    ttk.Label(about_window, text="Wouldn't be possible without: pywinstyles (Akaspace) and sv_ttk (rdbende)").pack(pady=5)
 
     ttk.Button(about_window, text="Close", command=about_window.destroy).pack(pady=20)
 
