@@ -167,7 +167,7 @@ ttk.Button(root, text="Browse..", command=choose_location).pack(pady=5)
 # select quality
 ttk.Label(root, text="Video Quality:").pack(pady=5)
 video_quality = tk.StringVar(value='best')
-quality_options = ['best', 'worst', 'mp4', 'webm', 'flv']
+quality_options = ['best', 'best', 'worst', 'mp4', 'webm', 'flv']
 ttk.OptionMenu(root, video_quality, *quality_options).pack(pady=5)
 
 # audio only option
@@ -177,7 +177,7 @@ ttk.Checkbutton(root, text="Download Audio", variable=audio_only_var).pack(pady=
 # select audio format
 ttk.Label(root, text="Audio Format:").pack(pady=5)
 audio_format_var = tk.StringVar(value='mp3')
-audio_format_options = ['mp3', 'm4a', 'opus', 'wav']
+audio_format_options = ['mp3', 'mp3', 'm4a', 'opus', 'wav']
 ttk.OptionMenu(root, audio_format_var, *audio_format_options).pack(pady=5)
 
 # the button that does the magic
