@@ -5,6 +5,10 @@ import pywinstyles
 import sys
 import os
 import subprocess
+import json
+import requests
+from PIL import Image, ImageTk
+import threading
 
 # find out where icon is
 if getattr(sys, 'frozen', False):
@@ -23,6 +27,32 @@ def get_resource_path(relative_path):
 yt_dlp_path = get_resource_path('resources/yt-dlp.exe')
 ffmpeg_path = get_resource_path('resources/ffmpeg.exe')
 
+# get video metadata
+def fetch_metadata(url):
+    command = [yt_dlp_path, '-j', url]
+    result = subprocess.run(command, capture_output=True, text=True)
+    metadata = json.loads(result.stdout)
+    return metadata
+
+# download and display thumbnail
+def download_thumbnail(thumbnail_url):
+    response = requests.get(thumbnail_url, stream=True)
+    if response.status_code == 200:
+        img_data = response.raw
+        img = Image.open(img_data)
+        img.thumbnail((200, 200))
+        return ImageTk.PhotoImage(img)
+    else:
+        return None
+    
+# add the thumbnail to the ui
+def update_video_info(metadata):
+    video_title.set(metadata['title'])
+    thumbnail_image = download_thumbnail(metadata['thumbnail'])
+    if thumbnail_image:
+        thumbnail_label.config(image=thumbnail_image)
+        thumbnail_label.image = thumbnail_image
+
 # title bar theme
 def apply_theme_to_titlebar(root):
     version = sys.getwindowsversion()
@@ -31,6 +61,7 @@ def apply_theme_to_titlebar(root):
         pywinstyles.change_header_color(root, "#1c1c1c" if sv_ttk.get_theme() == "dark" else "#fafafa")
     elif version.major == 10:
         pywinstyles.apply_style(root, "dark" if sv_ttk.get_theme() == "dark" else "normal")
+        
 
         root.wm_attributes("-alpha", 0.99)
         root.wm_attributes("-alpha", 1)
@@ -74,6 +105,16 @@ def download_video():
     if not url or not location:
         messagebox.showerror("Error", "Invalid link or save location.")
         return
+    try:
+        metadata = fetch_metadata(url)
+        update_video_info(metadata)
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to fetch metadata: {e}")
+        return
+    threading.Thread(target=handle_video_download, args=(url, location, quality, audio_format, download_audio)).start()
+# download video on another thread   
+def handle_video_download(url, location, quality, audio_format, download_audio):
+ try:    
     if download_audio:
         # go audio only mode
         command = [
@@ -140,14 +181,35 @@ def download_video():
         messagebox.showinfo("Success", "Video downloaded.")
     except subprocess.CalledProcessError:
         messagebox.showerror("Error", "Download failed.")
-
+ except Exception as e:
+     messagebox.showerror("Error", f"Something went wrong: {e}")
 # backend end
 
 # gui start
 
+# about window
+def open_about_window():
+    about_window = tk.Toplevel(root)
+    about_window.title("About")
+    about_window.iconbitmap(icon_path)
+    about_window.geometry("400x250")
+    pywinstyles.apply_style(about_window, "dark" if sv_ttk.get_theme() == "dark" else "normal")
+
+    logo_image = tk.PhotoImage(file=get_resource_path('resources/yt-dlp-gui-icon.png'))
+    logo_label = ttk.Label(about_window, image=logo_image)
+    logo_label.image = logo_image
+    logo_label.pack(pady=10)
+
+    ttk.Label(about_window, text="yt-dlp GUI").pack(pady=10)
+    ttk.Label(about_window, text="v1.0.2").pack(pady=5)
+    ttk.Label(about_window, text="Made by Creepers").pack(pady=5)
+
+    ttk.Button(about_window, text="Close", command=about_window.destroy).pack(pady=20)
+
 # main window
 root = tk.Tk()
 root.title("yt-dlp GUI")
+root.geometry("420x640")
 
 # graphic design is my passion
 icon_path = os.path.join(base_path, 'yt-dlp-gui-icon.ico')
@@ -180,8 +242,19 @@ audio_format_var = tk.StringVar(value='mp3')
 audio_format_options = ['mp3', 'mp3', 'm4a', 'opus', 'wav']
 ttk.OptionMenu(root, audio_format_var, *audio_format_options).pack(pady=5)
 
+# title and thumbnail
+
+video_title = tk.StringVar()
+ttk.Label(root, textvariable=video_title).pack(pady=5)
+
+thumbnail_label = ttk.Label(root)
+thumbnail_label.pack(pady=5)
+
+# about button
+ttk.Button(root, text="About", command=open_about_window).pack(side="left", anchor="sw", padx=10, pady=10)
+
 # the button that does the magic
-ttk.Button(root, text="Download", command=download_video).pack(pady=20)
+ttk.Button(root, text="Download", command=download_video).pack(side="right", anchor="se", padx=10, pady=10)
 
 # import theme
 sv_ttk.set_theme("dark")

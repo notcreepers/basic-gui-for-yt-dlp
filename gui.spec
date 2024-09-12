@@ -5,7 +5,7 @@ a = Analysis(
     ['gui.py'],
     pathex=['path/to/repo'],
     binaries=[('path/to/yt-dlp.exe', 'resources'), ('path/to/ffmpeg.exe', 'resources')],
-    datas=[('path/to/yt-dlp-gui-icon.ico', '.'), ('path/to/sv_ttk', 'sv_ttk'), ('path/to/pywinstyles', 'pywinstyles')],
+    datas=[('path/to/yt-dlp-gui-icon.ico', '.'), ('path/to/sv_ttk', 'sv_ttk'), ('path/to/pywinstyles', 'pywinstyles'), ('path/to/yt-dlp-gui-icon.png', 'resources')],
     hiddenimports=['sv_ttk', 'pywinstyles'],
     hookspath=[],
     hooksconfig={},
