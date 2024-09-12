@@ -10,6 +10,42 @@ import requests
 from PIL import Image, ImageTk
 import threading
 
+
+
+# fallback settings
+default_settings = {
+    "save_location": "",
+    "video_quality": "best",
+    "audio_format": "mp3",
+    "download_audio": False
+
+}
+
+# user config location
+config_path = os.path.join(os.path.expanduser("~"), "yt-dlp-gui-config.json")
+
+# load user config
+def load_settings():
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, 'r') as config_file:
+                return json.load(config_file)
+        except Exception as e:
+            print(f"Error loading config file: {e}")
+            return default_settings
+    else:
+        return default_settings
+    
+# save user config
+def save_settings(settings):
+    try:
+        with open(config_path, 'w') as config_file:
+            json.dump(settings, config_file)
+    except Exception as e:
+        print(f"Error saving config file: {e}")
+
+settings = load_settings()
+
 # find out where icon is
 if getattr(sys, 'frozen', False):
     base_path = sys._MEIPASS
@@ -96,8 +132,9 @@ def get_available_formats(url):
 
 # download the video
 def download_video():
+    settings = load_settings()
     url = youtube_url.get()
-    location = save_location.get()
+    location = save_location.get() or settings.get('save_location', '')
     quality = video_quality.get()
     audio_format = audio_format_var.get()
     download_audio = audio_only_var.get()
@@ -207,6 +244,55 @@ def open_about_window():
 
     ttk.Button(about_window, text="Close", command=about_window.destroy).pack(pady=20)
 
+# settings window
+def open_settings_window():
+    settings = load_settings()
+    settings_window = tk.Toplevel(root)
+    settings_window.title("Settings")
+    settings_window.iconbitmap(icon_path)
+    settings_window.geometry("540x340")
+    pywinstyles.apply_style(settings_window, "dark" if sv_ttk.get_theme() == "dark" else "normal")
+
+    
+    ttk.Label(settings_window, text="Advanced Settings").pack(pady=10)
+
+    # user save location
+    ttk.Label(settings_window, text="Default Save Location:").pack(pady=5)
+    save_location_var = tk.StringVar(value=settings.get('save_location', ''))
+    ttk.Entry(settings_window, textvariable=save_location_var, width=50).pack(pady=5)
+    ttk.Button(settings_window, text="Browse..", command=lambda: browse_save_location(save_location_var)).pack(pady=5)
+
+    # save settings and close button
+    ttk.Button(settings_window, text="Save", command=lambda: save_advanced_settings(
+        save_location_var.get(),
+        settings_window
+    )).pack(pady=10)
+
+    # browser for save location
+    def browse_save_location(save_location_var):
+        folder_selected = filedialog.askdirectory()
+        if folder_selected:
+            save_location_var.set(folder_selected)
+    
+    # save user settings and close the window
+    def save_advanced_settings(save_location, window):
+        settings = {
+            "save_location": save_location,
+        }
+        save_settings(settings)
+        
+        messagebox.showerror("Settings", "Settings saved successfully.")
+        window.destroy()
+    
+    # load user settings
+    settings = load_settings()
+
+    # set default
+    save_location.set(settings.get('save_location', ''))
+
+    ttk.Button(settings_window, text="Close", command=settings_window.destroy).pack(pady=20)
+    ttk.Label(settings_window, text="Changes will be applied after restart (sorry).").pack(pady=5)
+
 # main window
 root = tk.Tk()
 root.title("yt-dlp GUI")
@@ -223,7 +309,7 @@ youtube_url.pack(pady=5)
 
 # save location window
 ttk.Label(root, text="Save Location:").pack(pady=5)
-save_location = tk.StringVar()
+save_location = tk.StringVar(value=settings.get('save_location', ''))
 ttk.Entry(root, textvariable=save_location, width=50).pack(pady=5)
 ttk.Button(root, text="Browse..", command=choose_location).pack(pady=5)
 
@@ -234,7 +320,7 @@ quality_options = ['best', 'best', 'worst', 'mp4', 'webm', 'flv']
 ttk.OptionMenu(root, video_quality, *quality_options).pack(pady=5)
 
 # audio only option
-audio_only_var = tk.BooleanVar()
+audio_only_var = tk.BooleanVar(value=False)
 ttk.Checkbutton(root, text="Download Audio", variable=audio_only_var).pack(pady=5)
 
 # select audio format
@@ -256,6 +342,9 @@ ttk.Button(root, text="About", command=open_about_window).pack(side="left", anch
 
 # the button that does the magic
 ttk.Button(root, text="Download", command=download_video).pack(side="right", anchor="se", padx=10, pady=10)
+
+# settings button
+ttk.Button(root, text="Settings", command=open_settings_window).pack(side="bottom", padx=5, pady=10)
 
 # import theme
 sv_ttk.set_theme("dark")
