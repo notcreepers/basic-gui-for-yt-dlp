@@ -238,7 +238,7 @@ def open_about_window():
     logo_label.pack(pady=10)
 
     ttk.Label(about_window, text="yt-dlp GUI").pack(pady=10)
-    ttk.Label(about_window, text="v1.0.4").pack(pady=5)
+    ttk.Label(about_window, text="v1.0.5").pack(pady=5)
     ttk.Label(about_window, text="Made by Creepers").pack(pady=5)
     ttk.Label(about_window, text="Wouldn't be possible without: pywinstyles (Akaspace) and sv_ttk (rdbende)").pack(pady=5)
 
@@ -281,7 +281,7 @@ def open_settings_window():
         }
         save_settings(settings)
         
-        messagebox.showerror("Settings", "Settings saved successfully.")
+        messagebox.showinfo("Settings", "Settings saved successfully.")
         window.destroy()
     
     # load user settings
