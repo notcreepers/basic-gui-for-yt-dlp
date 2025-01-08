@@ -159,6 +159,7 @@ def handle_video_download(url, location, quality, audio_format, download_audio):
             '--extract-audio',
             '--audio-format', audio_format,
             url,
+            '--no-mtime',
             '-o', f'{location}/%(title)s.%(ext)s'
         ]
            
@@ -183,6 +184,7 @@ def handle_video_download(url, location, quality, audio_format, download_audio):
             '-f', 'bestvideo+bestaudio/best',
             '--remux-video', 'mp4',
             url,
+            '--no-mtime',
             '-o', f'{location}/%(title)s.%(ext)s'
         ]
     elif formats['webm'] and not formats['mp4']:
@@ -193,6 +195,7 @@ def handle_video_download(url, location, quality, audio_format, download_audio):
                 '-f', quality,
                 '--remux-video', 'mp4',
                 url,
+                '--no-mtime',
                 '-o', f'{location}/%(title)s.%(ext)s'
             ]
         else:
@@ -200,6 +203,7 @@ def handle_video_download(url, location, quality, audio_format, download_audio):
                 yt_dlp_path,
                 '-f', quality,
                 url,
+                '--no-mtime',
                 '-o', f'{location}/%(title)s.%(ext)s'
             ]
     else:
@@ -208,6 +212,7 @@ def handle_video_download(url, location, quality, audio_format, download_audio):
         yt_dlp_path,
         '-f', quality,
         url,
+        '--no-mtime',
         '-o', f'{location}/%(title)s.%(ext)s'
     ]
         
@@ -321,7 +326,7 @@ ttk.OptionMenu(root, video_quality, *quality_options).pack(pady=5)
 
 # audio only option
 audio_only_var = tk.BooleanVar(value=False)
-ttk.Checkbutton(root, text="Download Audio", variable=audio_only_var).pack(pady=5)
+ttk.Checkbutton(root, text="Only Download Audio", variable=audio_only_var).pack(pady=5)
 
 # select audio format
 ttk.Label(root, text="Audio Format:").pack(pady=5)
