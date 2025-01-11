@@ -5,6 +5,7 @@ import pywinstyles
 import sys
 import os
 import subprocess
+import re
 import json
 import requests
 from PIL import Image, ImageTk
@@ -66,7 +67,7 @@ ffmpeg_path = get_resource_path('resources/ffmpeg.exe')
 # get video metadata
 def fetch_metadata(url):
     command = [yt_dlp_path, '-j', url]
-    result = subprocess.run(command, capture_output=True, text=True)
+    result = subprocess.run(command, capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW)
     metadata = json.loads(result.stdout)
     return metadata
 
@@ -104,6 +105,14 @@ def apply_theme_to_titlebar(root):
 
 # backend start
 
+# progress bar shit
+def update_progress_bar(output, progress_bar):
+    match = re.search(r'(\d+)%', output)
+    if match:
+        percent = int(match.group(1))
+        progress_bar['value'] = percent
+        root.update_idletasks()
+
 # ask user for file location
 def choose_location():
     folder_selected = filedialog.askdirectory()
@@ -112,7 +121,7 @@ def choose_location():
 # fuck webm function
 def check_format(url):
     command = [yt_dlp_path, '-F', url]
-    result = subprocess.run(command, capture_output=True, text=True)
+    result = subprocess.run(command, capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW)
     formats = result.stdout
     format_lines = formats.splitlines()
 
@@ -127,7 +136,7 @@ def check_format(url):
 # figure out the formats we have
 def get_available_formats(url):
     command = [yt_dlp_path, '--list-formats', url]
-    result = subprocess.run(command, capture_output=True, text=True)
+    result = subprocess.run(command, capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW)
     return result.stdout
 
 # download the video
@@ -142,6 +151,10 @@ def download_video():
     if not url or not location:
         messagebox.showerror("Error", "Invalid link or save location.")
         return
+    
+    progress_bar['value'] = 0
+    root.update_idletasks()
+
     try:
         metadata = fetch_metadata(url)
         update_video_info(metadata)
@@ -166,7 +179,7 @@ def handle_video_download(url, location, quality, audio_format, download_audio):
 
         try:
             print(f"Executing command: {' '.join(command)}")
-            subprocess.run(command, check=True)
+            subprocess.run(command, check=True, creationflags=subprocess.CREATE_NO_WINDOW)
             messagebox.showinfo("Success", "Audio downloaded.")
         except Exception as e:
             messagebox.showerror("Error", f"Download failed.")
@@ -215,16 +228,24 @@ def handle_video_download(url, location, quality, audio_format, download_audio):
         '--no-mtime',
         '-o', f'{location}/%(title)s.%(ext)s'
     ]
-        
-        
+# this code is wip so this may be temporary 
     try:
-        print(f"Executing command: {' '.join(command)}")
-        subprocess.run(command, check=True)
-        messagebox.showinfo("Success", "Video downloaded.")
-    except subprocess.CalledProcessError:
-        messagebox.showerror("Error", "Download failed.")
+        with subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, creationflags=subprocess.CREATE_NO_WINDOW) as process:
+            for line in process.stdout:
+                update_progress_bar(line, progress_bar)  # Update the progress bar with the output
+        messagebox.showinfo("Success", "Download completed!")
+    except Exception as e:
+        messagebox.showerror("Error", f"Download failed: {e}")
  except Exception as e:
-     messagebox.showerror("Error", f"Something went wrong: {e}")
+     messagebox.showerror("Error", f"Something went wrong: {e}") 
+#    try:
+ #       print(f"Executing command: {' '.join(command)}")
+  #      subprocess.run(command, check=True, creationflags=subprocess.CREATE_NO_WINDOW)
+   #     messagebox.showinfo("Success", "Video downloaded.")
+    #except subprocess.CalledProcessError:
+     #   messagebox.showerror("Error", "Download failed.")
+ #except Exception as e:
+     #messagebox.showerror("Error", f"Something went wrong: {e}")
 # backend end
 
 # gui start
@@ -243,7 +264,7 @@ def open_about_window():
     logo_label.pack(pady=10)
 
     ttk.Label(about_window, text="yt-dlp GUI").pack(pady=10)
-    ttk.Label(about_window, text="v1.0.5").pack(pady=5)
+    ttk.Label(about_window, text="v1.1").pack(pady=5)
     ttk.Label(about_window, text="Made by Creepers").pack(pady=5)
     ttk.Label(about_window, text="Wouldn't be possible without: pywinstyles (Akaspace) and sv_ttk (rdbende)").pack(pady=5)
 
@@ -341,6 +362,10 @@ ttk.Label(root, textvariable=video_title).pack(pady=5)
 
 thumbnail_label = ttk.Label(root)
 thumbnail_label.pack(pady=5)
+
+# progress bar
+progress_bar = tk.ttk.Progressbar(root, length=300, mode="determinate", maximum=100)
+progress_bar.pack(pady=20)
 
 # about button
 ttk.Button(root, text="About", command=open_about_window).pack(side="left", anchor="sw", padx=10, pady=10)
