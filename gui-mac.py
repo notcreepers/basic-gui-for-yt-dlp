@@ -139,6 +139,7 @@ def handle_video_download(url, location, quality, audio_format, download_audio):
                 '--audio-format', audio_format,
                 url,
                 '--no-mtime',
+                '--ffmpeg-location', os.path.dirname(ffmpeg_path),
                 '-o', f'{location}/%(title)s.%(ext)s'
             ]
             try:
@@ -172,6 +173,7 @@ def handle_video_download(url, location, quality, audio_format, download_audio):
                     '--remux-video', 'mp4',
                     url,
                     '--no-mtime',
+                    '--ffmpeg-location', os.path.dirname(ffmpeg_path),
                     '-o', f'{location}/%(title)s.%(ext)s'
                 ]
             else:
@@ -180,6 +182,7 @@ def handle_video_download(url, location, quality, audio_format, download_audio):
                     '-f', quality,
                     url,
                     '--no-mtime',
+                    '--ffmpeg-location', os.path.dirname(ffmpeg_path),
                     '-o', f'{location}/%(title)s.%(ext)s'
                 ]
         else:
@@ -188,6 +191,7 @@ def handle_video_download(url, location, quality, audio_format, download_audio):
                 '-f', quality,
                 url,
                 '--no-mtime',
+                '--ffmpeg-location', os.path.dirname(ffmpeg_path),
                 '-o', f'{location}/%(title)s.%(ext)s'
             ]
 
