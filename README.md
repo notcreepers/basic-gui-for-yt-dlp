@@ -1,7 +1,8 @@
 # basic-gui-for-yt-dlp
 Fairly barebones GUI for yt-dlp
 ## macOS Branch
-**This branch will no longer be receiving updates due to the [rewrite](https://github.com/notcreepers/yt-dlp-gui-swift) in Swift
+**This branch will no longer be receiving updates due to the [rewrite](https://github.com/notcreepers/yt-dlp-gui-swift) in Swift**
+
 This is the experimental macOS branch. Due to issues I had while attempting to compile for macOS, this version **CANNOT** display the thumbnail and title of the video currently downloading, or produce files that QuickTime will open (if you use best quality).
 ## Instructions
 Clone the repo. You need all the files except for README.md
